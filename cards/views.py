@@ -27,17 +27,20 @@ def create_cards(request):
         if is_arabic:
             prompt = f"""
             استناداً إلى النص التالي، قم بإنشاء بطاقة تعليمية بسيطة تحتوي على سؤال وإجابة:
-
+            
             النص: {input_text}
-
+            
             التعليمات:
             1. قم بإنشاء سؤال مباشر لاختبار مفهوم أساسي مذكور في النص.
             2. قدم إجابة مختصرة تشرح المفهوم بشكل بسيط.
             3. تأكد أن يكون السؤال قصيراً وأن تكون الإجابة لا تتجاوز جملة أو جملتين.
-
-            التنسيق:
-            السؤال: [ضع سؤالك هنا]
-            الإجابة: [ضع إجابتك هنا]
+            4. اكتب السؤال والإجابة في سطرين منفصلين، دون أي علامات أو ترقيم.
+            
+            مثال على التنسيق المطلوب:
+            ما هو عاصمة فرنسا؟
+            باريس هي عاصمة فرنسا.
+            
+            الآن، قم بإنشاء البطاقة التعليمية وفقاً للتعليمات أعلاه:
             """
         else:
             prompt = f"""
@@ -49,10 +52,13 @@ def create_cards(request):
             1. Create a straightforward question testing a key concept from the text.
             2. Provide a concise answer that explains the concept in a simple way.
             3. Ensure the question is short and the answer is no longer than one or two sentences.
+            4. Write the question and answer on separate lines, without any labels or numbering.
+            
+            Example of the required format:
+            What is the capital of France?
+            Paris is the capital of France.
 
-            Format:
-            Question: [Your generated question here]
-            Answer: [Your generated answer here]
+            Now, create the flashcard according to the instructions above:
             """
 
         # Generate the content using the AI model
@@ -61,9 +67,11 @@ def create_cards(request):
 
         # Extract the question and answer from the response
         content = response.text.split('\n')
-        question = content[0].replace('Question:', '').strip()
-        answer = ' '.join(content[1:]).replace('Answer:', '').strip()
+    
 
+        question = content[0]
+        answer = ' '.join(content[1:])
+        
         # Create a new Card instance and save it to the database
         card = Card(question=question, answer=answer)
         card.save()
