@@ -59,10 +59,6 @@ def create_quizes(request):
         question = content[0].strip()
         answers = [line.strip() for line in content[1:] if line.strip()]
 
-        # Ensure we have exactly 4 answers
-        if len(answers) != 4:
-            raise ValueError("Expected 4 answers, got {len(answers)}")
-
         # Create the quiz object
         quiz = Quiz(
             question=question,
@@ -77,3 +73,12 @@ def create_quizes(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def get_quizes(request):
+    quizes = Quiz.objects.all()
+    serializer = QuizSerializer(quizes, many=True)
+    return Response(serializer.data)
+
+
+

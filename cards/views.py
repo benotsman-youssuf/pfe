@@ -25,64 +25,75 @@ def create_cards(request):
 
         # Use appropriate prompt based on detected language
         if is_arabic:
-            prompt = f"""
-            استناداً إلى النص التالي، قم بإنشاء بطاقة تعليمية بسيطة تحتوي على سؤال وإجابة:
-            
+            prompt = f'''
             النص: {input_text}
-            
+
             التعليمات:
-            1. قم بإنشاء سؤال مباشر لاختبار مفهوم أساسي مذكور في النص.
-            2. قدم إجابة مختصرة تشرح المفهوم بشكل بسيط.
-            3. تأكد أن يكون السؤال قصيراً وأن تكون الإجابة لا تتجاوز جملة أو جملتين.
-            4. اكتب السؤال والإجابة في سطرين منفصلين، دون أي علامات أو ترقيم.
-            
+            1. حدد المفاهيم أو المواضيع الرئيسية في النص.
+            2. لكل مفهوم، قم بإنشاء سؤال قصير جدًا وإجابة موجزة.
+            3. تأكد من أن كل سؤال مختصر للغاية وأن الإجابة لا تتجاوز جملة واحدة.
+            4. اكتب كل زوج من السؤال والإجابة في سطرين منفصلين، مع ترك سطر فارغ بين كل بطاقة تعليمية.
+            5. قلل من الكلمات غير الضرورية في الأسئلة والإجابات.
+
             مثال على التنسيق المطلوب:
-            ما هو عاصمة فرنسا؟
-            باريس هي عاصمة فرنسا.
-            
-            الآن، قم بإنشاء البطاقة التعليمية وفقاً للتعليمات أعلاه:
-            """
+            ما عاصمة فرنسا؟
+            باريس.
+
+            ما هو أطول نهر في العالم؟
+            نهر النيل، بطول 6,650 كم.
+
+            الآن، قم بإنشاء البطاقات التعليمية وفقًا للتعليمات أعلاه، بشكل مثالي لإنشاء بطاقات تعليمية مع تقليل طول الأسئلة والإجابات.
+            '''
         else:
             prompt = f"""
-            Based on the following text, generate a simple flashcard with a brief question and answer:
+            You are an experienced flashcard creator. Based on the following text, generate multiple flashcards covering the main subjects in the text:
 
             Text: {input_text}
 
             Instructions:
-            1. Create a straightforward question testing a key concept from the text.
-            2. Provide a concise answer that explains the concept in a simple way.
-            3. Ensure the question is short and the answer is no longer than one or two sentences.
-            4. Write the question and answer on separate lines, without any labels or numbering.
-            
-            Example of the required format:
-            What is the capital of France?
-            Paris is the capital of France.
+            1. Identify the key concepts or topics in the text.
+            2. For each concept, create a very short, summarized question and a concise answer.
+            3. Ensure each question is extremely brief and the answer is no longer than one sentence.
+            4. Write each question-answer pair on separate lines, with a blank line separating each flashcard.
+            5. Minimize unnecessary words in both questions and answers.
 
-            Now, create the flashcard according to the instructions above:
+            Example of the required format:
+            Capital of France?
+            Paris.
+
+            Longest river?
+            The Nile, 6,650 km long.
+
+            Now, create the flashcards according to the instructions above, perfect for creating flash cards and minimizing the length of questions and answers.
             """
 
         # Generate the content using the AI model
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
 
-        # Extract the question and answer from the response
-        content = response.text.split('\n')
-    
-
-        question = content[0]
-        answer = ' '.join(content[1:])
+        # Extract the questions and answers from the response
+        content = response.text.split('\n\n')
         
-        # Create a new Card instance and save it to the database
-        card = Card(question=question, answer=answer)
-        card.save()
+        cards = []
+        for card_content in content:
+            qa_pair = card_content.split('\n')
+            if len(qa_pair) == 2:
+                question, answer = qa_pair
+                # Create a new Card instance and save it to the database
+                card = Card(question=question, answer=answer)
+                card.save()
+                cards.append(card)
 
-        # Serialize the card and include the required response format
-        serializer = CardSerializer(card)
-        response_data = {
-            'id': serializer.data['id'],
-            'question': serializer.data['question'],
-            'answer': serializer.data['answer']
-        }
+        # Serialize the cards and include the required response format
+        serializer = CardSerializer(cards, many=True)
+        response_data = [
+            {
+                'id': card['id'],
+                'question': card['question'],
+                'answer': card['answer']
+            }
+            for card in serializer.data
+        ]
 
         return Response(response_data, status=status.HTTP_201_CREATED)
 
