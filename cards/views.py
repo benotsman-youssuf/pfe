@@ -25,46 +25,58 @@ def create_cards(request):
 
         # Use appropriate prompt based on detected language
         if is_arabic:
-            prompt = f'''
+            prompt = f"""
+            أنت خبير في إنشاء البطاقات التعليمية (الفلاش كارد) مكلف بإنتاج 10 بطاقات تعليمية عالية الجودة وموجزة على الأقل من النص التالي. هدفك هو التقاط أهم المعلومات في شكل سهل الاستيعاب.
             النص: {input_text}
-
             التعليمات:
-            1. حدد المفاهيم أو المواضيع الرئيسية في النص.
-            2. لكل مفهوم، قم بإنشاء سؤال قصير جدًا وإجابة موجزة.
-            3. تأكد من أن كل سؤال مختصر للغاية وأن الإجابة لا تتجاوز جملة واحدة.
-            4. اكتب كل زوج من السؤال والإجابة في سطرين منفصلين، مع ترك سطر فارغ بين كل بطاقة تعليمية.
-            5. قلل من الكلمات غير الضرورية في الأسئلة والإجابات.
 
-            مثال على التنسيق المطلوب:
-            ما عاصمة فرنسا؟
-            باريس.
+            1-قم بتحليل النص بدقة وحدد 10   مفاهيم أو حقائق أو مواضيع رئيسية على الأقل.
+            2-لكل عنصر تم تحديده، قم بإنشاء سؤال موجز للغاية وإجابة مختصرة ومركزة.
+            3-تأكد من أن الأسئلة لا تتجاوز 5-7 كلمات كحد أقصى وأن الإجابات تقتصر على جملة قصيرة واحدة (10-15 كلمة كحد أقصى).
+            4-قدم كل بطاقة تعليمية كزوج سؤال وإجابة، مفصولين بسطر واحد فقط.
+            5-استخدم سطرين فارغين بين البطاقات التعليمية للفصل الواضح.
+            6-أعط الأولوية للوضوح والإيجاز في كل من الأسئلة والأجابات.
+            6-إذا لم ينتج النص بشكل طبيعي 10 مفاهيم متميزة، قم بإنشاء بطاقات تعليمية إضافية عن طريق تفكيك الأفكار المعقدة أو استكشاف المواضيع الفرعية ذات الصلة.
 
-            ما هو أطول نهر في العالم؟
-            نهر النيل، بطول 6,650 كم.
+            شكل المثال:
+            ما هي عاصمة السعودية
+            الرياض
 
-            الآن، قم بإنشاء البطاقات التعليمية وفقًا للتعليمات أعلاه، بشكل مثالي لإنشاء بطاقات تعليمية مع تقليل طول الأسئلة والإجابات.
-            '''
+            من كتب رواية "ألف ليلة وليلة"
+            مؤلف مجهول، تعود لعصر الدولة العباسية
+
+            متى انتهت الحرب العالمية الثانية
+            انتهت عام 1945 باستسلام دول المحور
+
+            ما هي سرعة الضوء
+            حوالي 299,792,458 متر في الثانية في الفراغ
+
+            والآن، قم بإنشاء 4 بطاقات تعليمية على الأقل من النص المعطى، ملتزمًا بدقة بهذه الإرشادات. ركز على إنشاء بطاقات تعليمية موجزة ومفيدة ومتنوعة تلخص النقاط الرئيسية بشكل فعال.
+"""
         else:
             prompt = f"""
-            You are an experienced flashcard creator. Based on the following text, generate multiple flashcards covering the main subjects in the text:
-
+            You are an expert flashcard creator tasked with generating at least 4 high-quality, concise flashcards from the following text. Your goal is to capture the most important information in an easily digestible format.
             Text: {input_text}
-
             Instructions:
-            1. Identify the key concepts or topics in the text.
-            2. For each concept, create a very short, summarized question and a concise answer.
-            3. Ensure each question is extremely brief and the answer is no longer than one sentence.
-            4. Write each question-answer pair on separate lines, with a blank line separating each flashcard.
-            5. Minimize unnecessary words in both questions and answers.
 
-            Example of the required format:
-            Capital of France?
-            Paris.
+            Thoroughly analyze the text and identify at least 4 key concepts, facts, or topics.
+            For each identified element, create an ultra-concise question and a brief, focused answer.
+            Ensure questions are 5-7 words maximum and answers are limited to one short sentence (10-15 words max).
+            Present each flashcard as a question-answer pair, separated by a single line break.
+            Use a double line break between flashcards for clear separation.
+            Prioritize clarity and brevity in both questions and answers.
+            If the text doesn't naturally yield 4 distinct concepts, create additional flashcards by breaking down complex ideas or exploring related subtopics.
 
-            Longest river?
-            The Nile, 6,650 km long.
-
-            Now, create the flashcards according to the instructions above, perfect for creating flash cards and minimizing the length of questions and answers.
+            Example format:
+            What is photosynthesis?
+            Process where plants convert sunlight into energy.
+            Who wrote "To Kill a Mockingbird"?
+            Harper Lee authored this classic American novel.
+            When did World War II end?
+            WWII concluded in 1945 with Axis powers' surrender.
+            What's the speed of light?
+            Approximately 299,792,458 meters per second in vacuum.
+            Now, generate at least 4 flashcards from the given text, adhering strictly to these guidelines. Focus on creating concise, informative, and diverse flashcards that effectively summarize the key points.
             """
 
         # Generate the content using the AI model
