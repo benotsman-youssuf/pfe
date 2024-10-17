@@ -51,32 +51,36 @@ def create_cards(request):
             ما هي سرعة الضوء
             حوالي 299,792,458 متر في الثانية في الفراغ
 
-            والآن، قم بإنشاء 4 بطاقات تعليمية على الأقل من النص المعطى، ملتزمًا بدقة بهذه الإرشادات. ركز على إنشاء بطاقات تعليمية موجزة ومفيدة ومتنوعة تلخص النقاط الرئيسية بشكل فعال.
-"""
+            والآن، قم بإنشاء 10 بطاقات تعليمية على الأقل من النص المعطى، ملتزمًا بدقة بهذه الإرشادات. ركز على إنشاء بطاقات تعليمية موجزة ومفيدة ومتنوعة تلخص النقاط الرئيسية بشكل فعال.
+            """
         else:
             prompt = f"""
-            You are an expert flashcard creator tasked with generating at least 4 high-quality, concise flashcards from the following text. Your goal is to capture the most important information in an easily digestible format.
+            You are an expert flashcard creator tasked with generating high-quality, concise flashcards from the following text. Your goal is to capture the most important information in an easily digestible format.
+            
             Text: {input_text}
+            
             Instructions:
-
-            Thoroughly analyze the text and identify at least 4 key concepts, facts, or topics.
-            For each identified element, create an ultra-concise question and a brief, focused answer.
-            Ensure questions are 5-7 words maximum and answers are limited to one short sentence (10-15 words max).
-            Present each flashcard as a question-answer pair, separated by a single line break.
-            Use a double line break between flashcards for clear separation.
-            Prioritize clarity and brevity in both questions and answers.
-            If the text doesn't naturally yield 4 distinct concepts, create additional flashcards by breaking down complex ideas or exploring related subtopics.
+            1. Thoroughly analyze the text and identify all key concepts, facts, or topics.
+            2. Create a minimum of 3 flashcards and a maximum number that covers all main ideas in the text.
+            3. For each identified element, create an ultra-concise question and a brief, focused answer.
+            4. Ensure questions are 5-7 words maximum and answers are limited to one short sentence (10-15 words max).
+            5. Present each flashcard as a question-answer pair, separated by a single line break.
+            6. Use a double line break between flashcards for clear separation.
+            7. Prioritize clarity and brevity in both questions and answers.
+            8. If the text contains fewer than 3 distinct main ideas, create additional flashcards by breaking down complex concepts or exploring related subtopics.
+            9. If the text contains many important ideas, create as many flashcards as necessary to cover all main points, even if it exceeds 10 cards.
 
             Example format:
             What is photosynthesis?
             Process where plants convert sunlight into energy.
+
             Who wrote "To Kill a Mockingbird"?
             Harper Lee authored this classic American novel.
+
             When did World War II end?
             WWII concluded in 1945 with Axis powers' surrender.
-            What's the speed of light?
-            Approximately 299,792,458 meters per second in vacuum.
-            Now, generate at least 4 flashcards from the given text, adhering strictly to these guidelines. Focus on creating concise, informative, and diverse flashcards that effectively summarize the key points.
+
+            Now, generate flashcards from the given text, adhering strictly to these guidelines. Focus on creating concise, informative, and diverse flashcards that effectively summarize all key points in the text.
             """
 
         # Generate the content using the AI model

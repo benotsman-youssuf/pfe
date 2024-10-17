@@ -6,79 +6,103 @@ from .models import Quiz
 from .serializers import QuizSerializer
 import os
 from dotenv import load_dotenv
-
+import re
 
 load_dotenv()
-
 genai.configure(api_key=os.getenv('GEMINI_API'))
 
 @api_view(['POST'])
 def create_quizes(request):
     input_text = request.data.get('input_text')
     if not input_text:
-        return Response({'error':'Input text is required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Input text is required'}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        prompt = f"""Given the input text below, create a challenging quiz question with multiple-choice answers following these guidelines:
+        prompt = f"""
+        You are an AI quiz creator. Given the input text below, create multiple challenging multiple-choice quiz questions. Follow these guidelines:
 
-        1. Analyze the input text thoroughly to identify key concepts, important facts, or central themes.
-        2. Formulate a thought-provoking question that tests deep understanding of the material.
-        3. Create one correct answer and three plausible but incorrect answers.
-        4. Present the output as follows in this structure in this example:
+        1. **Content Analysis:** Analyze the input text to identify key concepts, facts, definitions, or important ideas.
+        2. **Question Generation:**
+            - Generate 4 to 10 questions based on the input content.
+            - Each question should test comprehension and understanding of the input text.
+            - Ensure the questions are varied, including conceptual, factual, and applied knowledge.
+        3. **Answer Structure:**
+            - Provide one correct answer and three plausible incorrect answers for each question.
+            - The incorrect answers should not be random, but reasonably related to the correct answer.
+        4. **Formatting:**
+            - Present each question followed by the four multiple-choice answers in this exact format:
+            Question: [Question text here]
+            a) [First answer]
+            b) [Second answer]
+            c) [Third answer]
+            d) [Fourth answer]
 
-        what is the capital of france?
-        paris
-        london
-        berlin
-        rome
-
-        Ensure that:
-        - The question is clear, concise, and directly related to the most significant aspects of the input text.
-        - The question requires critical thinking or application of knowledge, not just recall.
-        - All answers are of similar length, style, and complexity to avoid unintentional hints.
-        - Incorrect answers are highly plausible, related to the topic, and could trick someone who doesn't fully understand the material.
-        - Each answer is on a separate line without labels or bullet points.
-        - The correct answer is always the first option listed.
-
-        Avoid:
-        - Obvious trick questions or puns
-        - True/False questions
-        - "All of the above" or "None of the above" options
-        - Answers that are partially correct
+        5. **Additional Clarifications:**
+            - Use proper grammar and punctuation.
+            - Ensure no ambiguity in questions and answers.
+            - Start each new question with "Question:" on a new line
+            - Use exactly a), b), c), d) for answer choices
 
         Input text:
         {input_text}
-
-        Generate a challenging quiz based on the above instructions, focusing on the most important or interesting information from the input text.
         """
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
-        content = response.text.strip().split('\n')
+        content = response.text.strip()
+
+        # Split content into individual questions using regex
+        question_blocks = re.split(r'\n(?=Question:)', content)
         
-        # More robust parsing
-        question = content[0].strip()
-        answers = [line.strip() for line in content[1:] if line.strip()]
+        quizzes = []
+        for block in question_blocks:
+            if not block.strip():
+                continue
+                
+            # Parse question and answers
+            lines = [line.strip() for line in block.split('\n') if line.strip()]
+            
+            # Extract question (remove "Question:" prefix if present)
+            question = lines[0]
+            if question.startswith('Question:'):
+                question = question[9:].strip()
+            
+            # Extract answers
+            answers = []
+            for line in lines[1:]:
+                # Match answer pattern (a), b), c), d))
+                if re.match(r'^[a-d]\)', line):
+                    answer = line[2:].strip()  # Remove the prefix (e.g., "a)")
+                    answers.append(answer)
+            
+            # Only create quiz if we have a question and exactly 4 answers
+            if len(answers) == 4:
+                quiz = Quiz(
+                    question=question,
+                    answer1=answers[0],
+                    answer2=answers[1],
+                    answer3=answers[2],
+                    answer4=answers[3]
+                )
+                quiz.save()
+                quizzes.append(quiz)
 
-        # Create the quiz object
-        quiz = Quiz(
-            question=question,
-            answer1=answers[0],
-            answer2=answers[1],
-            answer3=answers[2],
-            answer4=answers[3]
-        )
-        quiz.save()
+        if not quizzes:
+            return Response(
+                {'error': 'No valid questions were generated'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
-        serializer = QuizSerializer(quiz)
+        serializer = QuizSerializer(quizzes, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+    except Exception as e:
+        return Response(
+            {'error': f'An error occurred: {str(e)}'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 @api_view(['GET'])
 def get_quizes(request):
     quizes = Quiz.objects.all()
     serializer = QuizSerializer(quizes, many=True)
     return Response(serializer.data)
-
-
-

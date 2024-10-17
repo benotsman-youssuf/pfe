@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/cards/', include('cards.urls')),
     path('api/quizes/', include('quiz.urls')),
+    path('api/mermiad/', include('mermiad.urls')),
 ]
