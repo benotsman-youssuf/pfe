@@ -45,26 +45,68 @@ def create_diagram(request):
             """
         else:
             prompt = f"""
-            You are an expert Mermaid diagram creator. Your task is to analyze the following text and create a Mermaid diagram that summarizes the key concepts and relationships.
+            You are an expert Mermaid diagram creator specializing in educational content visualization. Your task is to analyze the following text and create a comprehensive, hierarchical Mermaid diagram with clickable nodes linking to authoritative and educational resources.
 
-            Text: {input_text}
+            Text to analyze: {input_text}
 
             Instructions:
-            1. Analyze the text and identify the main concepts and relationships.
-            2. Create a Mermaid diagram that clearly and concisely expresses these concepts and relationships.
-            3. Use appropriate shapes and arrows to represent relationships between concepts.
-            4. Ensure the diagram is easy to read and well-organized.
-            5. Present the diagram using correct Mermaid syntax.
+            1. ANALYSIS PHASE:
+                - Identify main concepts, sub-concepts, and their relationships
+                - Determine natural groupings and hierarchies
+                - Identify key terms that require external references
 
-            Example Mermaid syntax:
+            2. DIAGRAM STRUCTURE:
+                - Use graph TD for top-down hierarchical layout
+                    - Implement clear visual hierarchy with main concepts at top
+                - Limit diagram width to 3-4 nodes per level for readability
+                - Use consistent naming conventions for nodes (e.g., mainTopic_subTopic)
+
+            3. NODE FORMATTING:
+                - Main concepts: Use descriptive labels in square brackets
+                - Sub-concepts: Include brief, clear descriptions
+                - Add hover text using quotation marks for additional context
+                - Ensure each node has a unique identifier
+
+            4. LINKING STRATEGY:
+                - Primary sources: Wikipedia for fundamental concepts
+                - Secondary sources: Educational websites (e.g., Khan Academy, W3Schools)
+                - Academic sources: Google Scholar or research papers when applicable
+                - Documentation: Official docs for technical concepts
+                - Use this syntax: click nodeId "URL" "Hover text"
+
+            5. RELATIONSHIP REPRESENTATION:
+                - --> for direct relationships
+                - --- for loose associations
+                - -.- for optional relationships
+                - === for emphasized connections
+
+            Example Structure:
             ```mermaid
             graph TD
-                A[Concept 1] --> B[Concept 2]
-                B --> C[Concept 3]
-                C --> D[Concept 4]
+                A["Main Concept"]
+                B["Sub-Concept 1"]
+                C["Sub-Concept 2"]
+
+                A --> B
+                A --> C
+                B --> D["Detail 1"]
+                B --> E["Detail 2"]
+                C --> F["Detail 3"]
+
+                %% Clickable nodes with hover text
+                click A "https://en.wikipedia.org/wiki/Main_Concept" "Click to learn more about Main Concept"
+                click B "https://edu-source.org/sub1" "Detailed explanation of Sub-Concept 1"
+                click C "https://docs.example.com/sub2" "Official documentation for Sub-Concept 2"
             ```
 
-            Now, generate a Mermaid diagram summarizing the given text, adhering strictly to these guidelines.
+            Source Priority List:
+            1. Wikipedia (for general concepts)
+            2. Official Documentation (for technical topics)
+            3. Educational Platforms (khanacademy )
+            4. Research Papers (for academic concepts)
+            5. Industry Standard Resources (W3Schools, MDN, youtube , medium , etc.)
+
+            Please generate a comprehensive Mermaid diagram following these guidelines, ensuring all nodes are clickable and link to relevant, authoritative sources.
             """
 
         model = genai.GenerativeModel("gemini-1.5-pro")
