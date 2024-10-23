@@ -100,11 +100,12 @@ def create_diagram(request):
             ```
 
             Source Priority List:
-            1. Wikipedia (for general concepts)
+            1. use meiudm or official websites (for general concepts)
             2. Official Documentation (for technical topics)
             3. Educational Platforms (khanacademy )
             4. Research Papers (for academic concepts)
             5. Industry Standard Resources (W3Schools, MDN, youtube , medium , etc.)
+            6. dont use wikipedia 
 
             Please generate a comprehensive Mermaid diagram following these guidelines, ensuring all nodes are clickable and link to relevant, authoritative sources.
             """

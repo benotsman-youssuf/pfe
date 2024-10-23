@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'cards',
     'quiz',
     'mermiad',
+    'youtube',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
